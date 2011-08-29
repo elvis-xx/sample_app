@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_filter :authenticate, :only => [:edit, :update]
   before_filter :correct_user, :only => [:edit, :update]
   before_filter :admin_user, :only => [:delete]
+  before_filter :has_login, :only => [:new, :create]
   
   def index
     @title = "All users"
@@ -15,6 +16,7 @@ class UsersController < ApplicationController
   
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(:page => params[:page])
     @title = @user.name
   end
   
@@ -64,6 +66,10 @@ class UsersController < ApplicationController
     
     def admin_user
       redirect_to root_path unless current_user.admin?
+    end
+    
+    def has_login
+      redirect_to root_path if signed_in?
     end
     
 
